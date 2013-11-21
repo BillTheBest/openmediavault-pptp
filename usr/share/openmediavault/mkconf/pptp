@@ -1,0 +1,110 @@
+#!/bin/sh
+#
+# @license   http://www.gnu.org/licenses/gpl.html GPL Version 3
+# @author    Volker Theile <volker.theile@openmediavault.org>
+# @copyright Copyright (c) 2009-2013 Volker Theile
+#
+# This file is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# any later version.
+#
+# This file is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this file. If not, see <http://www.gnu.org/licenses/>.
+
+set -e
+
+. /etc/default/openmediavault
+. /usr/share/openmediavault/scripts/helper-functions
+
+PPTPD_CONFIG="/etc/pptpd.conf"
+PPTPD_OPTIONS="/etc/ppp/pptpd-options"
+CHAP_SECRETS="/etc/ppp/chap-secrets"
+
+if [ "$(omv_config_get "//services/pptp/enable")" != "1" ]; then
+    exit 0
+fi
+
+
+# Create pptpd config
+cat <<EOF > ${PPTPD_CONFIG}
+localip $(omv_config_get "//services/pptp/localip")
+remoteip $(omv_config_get "//services/pptp/remoteip")
+EOF
+
+
+# Create options file
+cat <<EOF > ${PPTPD_OPTIONS}
+# Name of the local system for authentication purposes
+# (must match the second field in /etc/ppp/chap-secrets entries)
+name pptpd
+
+# Encryption
+# Debian: on systems with a kernel built with the package
+# kernel-patch-mppe >= 2.4.2 and using ppp >= 2.4.2, ...
+# {{{
+refuse-pap
+refuse-chap
+refuse-mschap
+# Require the peer to authenticate itself using MS-CHAPv2 [Microsoft
+# Challenge Handshake Authentication Protocol, Version 2] authentication.
+require-mschap-v2
+# Require MPPE 128-bit encryption
+# (note that MPPE requires the use of MSCHAP-V2 during authentication)
+require-mppe-128
+# }}}
+
+# Network and Routing
+
+# If pppd is acting as a server for Microsoft Windows clients, this
+# option allows pppd to supply one or two DNS (Domain Name Server)
+# addresses to the clients.  The first instance of this option
+# specifies the primary DNS address; the second instance (if given)
+# specifies the secondary DNS address.
+# Attention! This information may not be taken into account by a Windows
+# client. See KB311218 in Microsoft's knowledge base for more information.
+ms-dns $(omv_config_get "//services/pptp/msdns")
+
+# Add an entry to this system's ARP [Address Resolution Protocol]
+# table with the IP address of the peer and the Ethernet address of this
+# system.  This will have the effect of making the peer appear to other
+# systems to be on the local ethernet.
+# (you do not need this if your PPTP server is responsible for routing
+# packets to the clients -- James Cameron)
+proxyarp
+
+# Debian: do not replace the default route
+nodefaultroute
+
+# Miscellaneous
+noipx
+mtu 1490
+mru 1490
+
+# Create a UUCP-style lock file for the pseudo-tty to ensure exclusive
+# access.
+lock
+
+# Disable BSD-Compress compression
+nobsdcomp
+EOF
+
+
+# Create chap file
+index=$(omv_config_get_count "//services/pptp/users/user")
+while [ ${index} -gt 0 ]; do
+
+    username=$(omv_config_get "//services/pptp/users/user[position()=${index}]/username")
+    password=$(omv_config_get "//services/pptp/users/user[position()=${index}]/password")
+
+    echo "${username}\t*\t${password}\t*" >> ${CHAP_SECRETS}
+
+    index=$(( ${index} - 1 ))
+done
+
+/etc/init.d/pptpd restart

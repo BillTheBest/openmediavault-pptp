@@ -1,0 +1,14 @@
+Source: openmediavault-pptp
+Section: net
+Priority: optional
+Maintainer: OpenMediaVault Plugin Developers <plugins@omv-extras.org>
+Build-Depends: debhelper (>= 7)
+Standards-Version: 3.9.3
+Homepage: http://omv-extras.org
+
+Package: openmediavault-pptp
+Architecture: all
+Depends: ${misc:Depends}, openmediavault (>= 0.5), pptpd
+Priority: optional
+Description: OpenMediaVault pptp Plugin
+ Web interface for pptp vpn server.
