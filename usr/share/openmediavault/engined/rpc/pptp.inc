@@ -181,7 +181,7 @@ class OMVRpcServicePptp extends OMVRpcServiceAbstract {
             "type"       : "object",
             "properties" : {
                 "uuid"     : { '.$GLOBALS['OMV_JSONSCHEMA_UUID_UNDEFINED'].' },
-                "username" : { "type" : "string" }
+                "username" : { "type" : "string" },
                 "password" : { "type" : "string" }
             }
         }');
