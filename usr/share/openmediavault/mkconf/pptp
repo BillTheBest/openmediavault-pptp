@@ -94,6 +94,11 @@ nobsdcomp
 EOF
 
 # Create chap file
+cat <<EOF > ${CHAP_SECRETS}
+# Secrets for authentication using CHAP
+# client\tserver\tsecret\tIP addresses
+EOF
+
 index=$(omv_config_get_count "//services/pptp/users/user")
 while [ ${index} -gt 0 ]; do
 
