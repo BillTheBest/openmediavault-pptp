@@ -20,42 +20,48 @@
 // require("js/omv/workspace/form/Panel.js")
 
 Ext.define("OMV.module.admin.service.pptp.Settings", {
-    extend: "OMV.workspace.form.Panel",
+    extend : "OMV.workspace.form.Panel",
 
-    rpcService: "Pptp",
-    rpcGetMethod: "getSettings",
-    rpcSetMethod: "setSettings",
+    rpcService   : "Pptp",
+    rpcGetMethod : "getSettings",
+    rpcSetMethod : "setSettings",
 
-    getFormItems: function() {
+    getFormItems : function() {
         var me = this;
+
         return [{
-            xtype: "fieldset",
-            title: _("General settings"),
-            fieldDefaults: {
+            xtype         : "fieldset",
+            title         : _("General settings"),
+            fieldDefaults : {
                 labelSeparator: ""
             },
-            items: [{
-                xtype: "checkbox",
-                name: "enable",
-                fieldLabel: _("Enable"),
-                checked: false
+            items : [{
+                xtype      : "checkbox",
+                name       : "enable",
+                fieldLabel : _("Enable"),
+                checked    : false
             },{
-                xtype: "textfield",
-                name: "localip",
-                fieldLabel: _("Local IP"),
-                allowBlank: false,
-                plugins: [{
-                    ptype: "fieldinfo",
-                    text: _("IP address of this server - example: 192.168.1.99")
+                xtype      : "checkbox",
+                name       : "enableforwarding",
+                fieldLabel : _("Enable forwarding"),
+                checked   : false
+            },{
+                xtype      : "textfield",
+                name       : "localip",
+                fieldLabel : _("Local IP"),
+                allowBlank : false,
+                plugins    : [{
+                    ptype : "fieldinfo",
+                    text  : _("IP address of this server - example: 192.168.1.99")
                 }]
             },{
-                xtype: "textfield",
-                name: "remoteip",
-                fieldLabel: _("Remote IP"),
-                value: "",
-                plugins: [{
-                    ptype: "fieldinfo",
-                    text: _("These are the address/addresses that will be handed out to the clients. The following scheme is mandatory:") +
+                xtype      : "textfield",
+                name       : "remoteip",
+                fieldLabel : _("Remote IP"),
+                value      : "",
+                plugins    : [{
+                    ptype : "fieldinfo",
+                    text  : _("These are the address/addresses that will be handed out to the clients. The following scheme is mandatory:") +
                             "<ul>" +
                             "<li>" + _("define a single IP - example: 192.168.1.45") + "</li>" +
                             "<li>" + _("define a range of IPs - example: 192.168.1.24-28") + "</li>" +
@@ -63,13 +69,13 @@ Ext.define("OMV.module.admin.service.pptp.Settings", {
                             "</ul>"
                 }]
             },{
-                xtype: "textfield",
-                name: "msdns",
-                fieldLabel: _("DNS Server"),
-                allowBlank: false,
-                plugins: [{
-                    ptype: "fieldinfo",
-                    text: _("The DNS server for the local network your client will be connecting to - example: 192.168.1.1")
+                xtype      : "textfield",
+                name       : "msdns",
+                fieldLabel : _("DNS Server"),
+                allowBlank : false,
+                plugins    : [{
+                    ptype : "fieldinfo",
+                    text  : _("The DNS server for the local network your client will be connecting to - example: 192.168.1.1")
                 }]
             }]
         }];
@@ -77,9 +83,9 @@ Ext.define("OMV.module.admin.service.pptp.Settings", {
 });
 
 OMV.WorkspaceManager.registerPanel({
-    id: "settings",
-    path: "/service/pptp",
-    text: _("Settings"),
-    position: 10,
-    className: "OMV.module.admin.service.pptp.Settings"
+    id        : "settings",
+    path      : "/service/pptp",
+    text      : _("Settings"),
+    position  : 10,
+    className : "OMV.module.admin.service.pptp.Settings"
 });

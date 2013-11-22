@@ -23,6 +23,7 @@ set -e
 PPTPD_CONFIG="/etc/pptpd.conf"
 PPTPD_OPTIONS="/etc/ppp/pptpd-options"
 CHAP_SECRETS="/etc/ppp/chap-secrets"
+SYSCTL_CONFIG="/etc/sysctl.conf"
 
 if [ "$(omv_config_get "//services/pptp/enable")" != "1" ]; then
     exit 0
@@ -92,7 +93,6 @@ lock
 nobsdcomp
 EOF
 
-
 # Create chap file
 index=$(omv_config_get_count "//services/pptp/users/user")
 while [ ${index} -gt 0 ]; do
@@ -104,5 +104,10 @@ while [ ${index} -gt 0 ]; do
 
     index=$(( ${index} - 1 ))
 done
+
+# Enable/disable forwarding
+enableforwarding=$(omv_config_get "//services/pptp/enableforwarding")
+sed -i 's/^[#]\?net.ipv4.ip_forward=[01]$/net.ipv4.ip_forward=${enableforwarding}/' ${SYSCTL_CONFIG}
+/sbin/sysctl -p
 
 /etc/init.d/pptpd restart

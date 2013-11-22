@@ -26,6 +26,7 @@ case "$1" in
     if ! omv_config_exists "/config/services/pptp"; then
         echo "Initialize configuration"
         object="<enable>0</enable>"
+        object="${object}<enableforwarding>0</enableforwarding>"
         object="${object}<localip></localip>"
         object="${object}<remoteip></remoteip>"
         object="${object}<msdns></msdns>"

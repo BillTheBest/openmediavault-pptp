@@ -54,7 +54,8 @@ class OMVRpcServicePptp extends OMVRpcServiceAbstract {
         }
 
         // Modify the result object.
-        $object['enable'] = boolval($object['enable']);
+        $object['enable']           = boolval($object['enable']);
+        $object['enableforwarding'] = boolval($object['enableforwarding']);
 
         // Remove useless fields from the result object.
         unset($object['users']);
@@ -72,10 +73,11 @@ class OMVRpcServicePptp extends OMVRpcServiceAbstract {
         $this->validateMethodParams($params, '{
             "type"       : "object",
             "properties" : {
-                "enable"   : { "type" : "boolean" },
-                "localip"  : { "type" : "string" },
-                "remoteip" : { "type" : "string" },
-                "msdns"    : { "type" : "string" }
+                "enable"           : { "type" : "boolean" },
+                "enableforwarding" : { "type" : "boolean" },
+                "localip"          : { "type" : "string" },
+                "remoteip"         : { "type" : "string" },
+                "msdns"            : { "type" : "string" }
             }
         }');
 
@@ -89,11 +91,12 @@ class OMVRpcServicePptp extends OMVRpcServiceAbstract {
 
         // Update the configuration object.
         $object = array(
-            "enable"   => array_boolval($params, 'enable'),
-            "localip"  => $params['localip'],
-            "remoteip" => $params['remoteip'],
-            "msdns"    => $params['msdns'],
-            "users"    => isset($oldObject['users']) ? $oldObject['users'] : array(),
+            "enable"           => array_boolval($params, 'enable'),
+            "enableforwarding" => array_boolval($params, 'enableforwarding'),
+            "localip"          => $params['localip'],
+            "remoteip"         => $params['remoteip'],
+            "msdns"            => $params['msdns'],
+            "users"            => isset($oldObject['users']) ? $oldObject['users'] : array(),
         );
 
         if (false === $xmlConfig->replace("//services/pptp", $object)) {
