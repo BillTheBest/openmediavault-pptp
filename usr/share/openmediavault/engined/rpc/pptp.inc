@@ -1,23 +1,22 @@
 <?php
+
 /**
+ * Copyright (C) 2013 OpenMediaVault Plugin Developers
  *
- * @license   http://www.gnu.org/licenses/gpl.html GPL Version 3
- * @author    Marcel Beck <marcel.beck@mbeck.org>
- * @copyright Copyright (c) 2012 Marcel Beck
- *
- * OpenMediaVault is free software: you can redistribute it and/or modify
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
- * any later version.
+ * (at your option) any later version.
  *
- * OpenMediaVault is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with OpenMediaVault. If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 require_once("openmediavault/object.inc");
 require_once("openmediavault/config.inc");
 require_once("openmediavault/error.inc");
@@ -49,7 +48,8 @@ class OMVRpcServicePptp extends OMVRpcServiceAbstract {
         // Get the configuration object.
         $xpath = "//services/pptp";
         $object = $xmlConfig->get($xpath);
-        if(is_null($object)) {
+
+        if (is_null($object)) {
             throw new OMVException(OMVErrorMsg::E_CONFIG_GET_OBJECT_FAILED, $xpath);
         }
 
@@ -58,6 +58,7 @@ class OMVRpcServicePptp extends OMVRpcServiceAbstract {
 
         // Remove useless fields from the result object.
         unset($object['users']);
+
         return $object;
     }
 
@@ -81,21 +82,26 @@ class OMVRpcServicePptp extends OMVRpcServiceAbstract {
         // Get the existing configuration object.
         $xpath = "//services/pptp";
         $oldObject = $xmlConfig->get($xpath);
-        if(is_null($oldObject)) {
+
+        if (is_null($oldObject)) {
             throw new OMVException(OMVErrorMsg::E_CONFIG_GET_OBJECT_FAILED, $xpath);
         }
 
         // Update the configuration object.
         $object = array(
             "enable"   => array_boolval($params, 'enable'),
-            "localip"  => $params['name'],
-            "remoteip" => $params['port'],
-            "msdns"    => $params['port'],
+            "localip"  => $params['localip'],
+            "remoteip" => $params['remoteip'],
+            "msdns"    => $params['msdns'],
             "users"    => isset($oldObject['users']) ? $oldObject['users'] : array(),
         );
-        if(FALSE === $xmlConfig->replace("//services/pptp", $object)) {
+
+        if (false === $xmlConfig->replace("//services/pptp", $object)) {
             throw new OMVException(OMVErrorMsg::E_CONFIG_SET_OBJECT_FAILED);
         }
+
+        // Remove useless fields from the result object.
+        unset($object['users']);
 
         // Notify configuration changes.
         $dispatcher = &OMVNotifyDispatcher::getInstance();
@@ -126,7 +132,8 @@ class OMVRpcServicePptp extends OMVRpcServiceAbstract {
         // Get the configuration object.
         $xpath = "//services/pptp/users/user";
         $objects = $xmlConfig->getList($xpath);
-        if(is_null($objects)) {
+
+        if (is_null($objects)) {
             throw new OMVException(OMVErrorMsg::E_CONFIG_GET_OBJECT_FAILED, $xpath);
         }
 
@@ -152,7 +159,8 @@ class OMVRpcServicePptp extends OMVRpcServiceAbstract {
         // Get the configuration object.
         $xpath = sprintf("//services/pptp/users/user[uuid='%s']", $params['uuid']);
         $object = $xmlConfig->get($xpath);
-        if(is_null($object)) {
+
+        if (is_null($object)) {
             throw new OMVException(OMVErrorMsg::E_CONFIG_GET_OBJECT_FAILED, $xpath);
         }
 
@@ -183,10 +191,11 @@ class OMVRpcServicePptp extends OMVRpcServiceAbstract {
         );
 
         // Set the configuration object.
-        $success = FALSE;
-        if($params['uuid'] == $GLOBALS['OMV_UUID_UNDEFINED']) {
+        $success = false;
+
+        if ($params['uuid'] == $GLOBALS['OMV_UUID_UNDEFINED']) {
             // Check uniqueness. A user should only appear in the list once.
-            if ( TRUE === $xmlConfig->exists("//services/pptp/users/user[username='{$params['username']}']") ) {
+            if (true === $xmlConfig->exists("//services/pptp/users/user[username='{$params['username']}']")) {
                 throw new OMVException(OMVErrorMsg::E_CONFIG_OBJECT_UNIQUENESS,
                   gettext("That username is already in the list!"));
             }
@@ -197,7 +206,7 @@ class OMVRpcServicePptp extends OMVRpcServiceAbstract {
             // Update the existing configuration object.
             $success = $xmlConfig->replace("//services/pptp/users/user[uuid='{$params['uuid']}']", $object);
         }
-        if(FALSE === $success) {
+        if (false === $success) {
             throw new OMVException(OMVErrorMsg::E_CONFIG_SET_OBJECT_FAILED);
         }
 
@@ -235,4 +244,3 @@ class OMVRpcServicePptp extends OMVRpcServiceAbstract {
 // Register the RPC service.
 $rpcServiceMgr = &OMVRpcServiceMgr::getInstance();
 $rpcServiceMgr->registerService(new OMVRpcServicePptp());
-?>
