@@ -107,7 +107,7 @@ done
 
 # Enable/disable forwarding
 enableforwarding=$(omv_config_get "//services/pptp/enableforwarding")
-sed -i 's/^[#]\?net.ipv4.ip_forward=[01]$/net.ipv4.ip_forward=${enableforwarding}/' ${SYSCTL_CONFIG}
+/bin/sed -i "s/^[#]\?net.ipv4.ip_forward=[01]$/net.ipv4.ip_forward=${enableforwarding}/" ${SYSCTL_CONFIG}
 /sbin/sysctl -p
 
 /etc/init.d/pptpd restart
