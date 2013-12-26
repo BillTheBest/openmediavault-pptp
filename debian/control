@@ -12,3 +12,6 @@ Depends: ${misc:Depends}, openmediavault (>= 0.5), pptpd
 Priority: optional
 Description: OpenMediaVault pptp Plugin
  Web interface for pptp vpn server.
+ .
+ Warning: PPTP is known to be insecure and crackable!
+
